@@ -2,8 +2,11 @@ package com.cursokotlin.retrofitkotlinexample
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import retrofit2.Retrofit
@@ -11,27 +14,24 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity(), android.support.v7.widget.SearchView.OnQueryTextListener {
 
+    lateinit var imagesPuppies:List<String>
+    lateinit var dogAdapter:DogAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        searchCharapter.queryHint = "Ej: Hodor"
-        searchCharapter.setOnQueryTextListener(this)
-        doAsync {
-            var call = getRetrofit().create(APIService::class.java).getCharacterByName("characters/hodor").execute()
-            var character = call.body() as ModelResponse
-            uiThread {
-                initCharacter(character)
-            }
-
-
-
-
-        }
+        searchBreed.setOnQueryTextListener(this)
 
     }
 
-    private fun initCharacter(character: ModelResponse) {
-
+    private fun initCharacter(puppies: ModelResponse) {
+        if(puppies.status == "success"){
+            imagesPuppies = puppies.images
+        }
+        dogAdapter = DogAdapter(imagesPuppies)
+        rvDogs.setHasFixedSize(true)
+        rvDogs.layoutManager = LinearLayoutManager(this)
+        rvDogs.adapter = dogAdapter
     }
 
     fun toast(text: String) {
@@ -40,17 +40,44 @@ class MainActivity : AppCompatActivity(), android.support.v7.widget.SearchView.O
 
     private fun getRetrofit(): Retrofit {
         return Retrofit.Builder()
-                .baseUrl("https://api.got.show/api/")
+                .baseUrl("https://dog.ceo/api/breed/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
     }
 
 
-    override fun onQueryTextSubmit(query: String?): Boolean {
+    override fun onQueryTextSubmit(query: String): Boolean {
+        searchByName(query.toLowerCase())
         return true
+    }
+
+    private fun searchByName(query: String) {
+        doAsync {
+            var call = getRetrofit().create(APIService::class.java).getCharacterByName("$query/images").execute()
+            var puppies = call.body() as ModelResponse
+            uiThread {
+                if(puppies.status == "success") {
+                    initCharacter(puppies)
+                }else{
+                    showErrorDialog()
+                }
+                hideKeyboard()
+            }
+        }
+    }
+
+    private fun showErrorDialog() {
+        alert("Ha ocurrido un error, inténtelo de nuevo.") {
+            yesButton { }
+        }.show()
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
         return true
+    }
+
+    fun hideKeyboard(){
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(viewRoot.windowToken, 0)
     }
 }
