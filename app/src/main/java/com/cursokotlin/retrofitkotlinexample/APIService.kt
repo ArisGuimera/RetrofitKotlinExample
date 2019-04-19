@@ -8,6 +8,6 @@ import retrofit2.http.Url
  * Created by aristidesguimeraorozco on 29/4/18.
  */
 interface APIService {
-    @GET()
+    @GET
     fun getCharacterByName(@Url url:String): Call<ModelResponse>
 }

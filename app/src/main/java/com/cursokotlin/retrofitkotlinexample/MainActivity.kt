@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity(), android.support.v7.widget.SearchView.O
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         searchBreed.setOnQueryTextListener(this)
-
     }
 
     private fun initCharacter(puppies: ModelResponse) {
@@ -32,10 +31,6 @@ class MainActivity : AppCompatActivity(), android.support.v7.widget.SearchView.O
         rvDogs.setHasFixedSize(true)
         rvDogs.layoutManager = LinearLayoutManager(this)
         rvDogs.adapter = dogAdapter
-    }
-
-    fun toast(text: String) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
 
     private fun getRetrofit(): Retrofit {
@@ -53,8 +48,8 @@ class MainActivity : AppCompatActivity(), android.support.v7.widget.SearchView.O
 
     private fun searchByName(query: String) {
         doAsync {
-            var call = getRetrofit().create(APIService::class.java).getCharacterByName("$query/images").execute()
-            var puppies = call.body() as ModelResponse
+            val call = getRetrofit().create(APIService::class.java).getCharacterByName("$query/images").execute()
+            val puppies = call.body() as ModelResponse
             uiThread {
                 if(puppies.status == "success") {
                     initCharacter(puppies)
@@ -76,7 +71,7 @@ class MainActivity : AppCompatActivity(), android.support.v7.widget.SearchView.O
         return true
     }
 
-    fun hideKeyboard(){
+    private fun hideKeyboard(){
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(viewRoot.windowToken, 0)
     }
