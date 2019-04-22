@@ -9,5 +9,5 @@ import retrofit2.http.Url
  */
 interface APIService {
     @GET
-    fun getCharacterByName(@Url url:String): Call<ModelResponse>
+    fun getCharacterByName(@Url url:String): Call<DogsResponse>
 }

@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.item_dog.view.*
 /**
  * Created by aristidesguimeraorozco on 5/5/18.
  */
-class DogAdapter (val images: List<String>) : RecyclerView.Adapter<DogAdapter.ViewHolder>() {
+class DogsAdapter (val images: List<String>) : RecyclerView.Adapter<DogsAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = images[position]

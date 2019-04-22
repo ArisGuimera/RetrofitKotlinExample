@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.doAsync
@@ -15,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity(), android.support.v7.widget.SearchView.OnQueryTextListener {
 
     lateinit var imagesPuppies:List<String>
-    lateinit var dogAdapter:DogAdapter
+    lateinit var dogsAdapter:DogsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,14 +22,14 @@ class MainActivity : AppCompatActivity(), android.support.v7.widget.SearchView.O
         searchBreed.setOnQueryTextListener(this)
     }
 
-    private fun initCharacter(puppies: ModelResponse) {
+    private fun initCharacter(puppies: DogsResponse) {
         if(puppies.status == "success"){
             imagesPuppies = puppies.images
         }
-        dogAdapter = DogAdapter(imagesPuppies)
+        dogsAdapter = DogsAdapter(imagesPuppies)
         rvDogs.setHasFixedSize(true)
         rvDogs.layoutManager = LinearLayoutManager(this)
-        rvDogs.adapter = dogAdapter
+        rvDogs.adapter = dogsAdapter
     }
 
     private fun getRetrofit(): Retrofit {
@@ -49,7 +48,7 @@ class MainActivity : AppCompatActivity(), android.support.v7.widget.SearchView.O
     private fun searchByName(query: String) {
         doAsync {
             val call = getRetrofit().create(APIService::class.java).getCharacterByName("$query/images").execute()
-            val puppies = call.body() as ModelResponse
+            val puppies = call.body() as DogsResponse
             uiThread {
                 if(puppies.status == "success") {
                     initCharacter(puppies)
