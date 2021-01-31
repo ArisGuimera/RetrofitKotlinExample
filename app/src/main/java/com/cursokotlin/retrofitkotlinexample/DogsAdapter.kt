@@ -1,10 +1,10 @@
 package com.cursokotlin.retrofitkotlinexample
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.item_dog.view.*
+import com.cursokotlin.retrofitkotlinexample.databinding.ItemDogBinding
 
 /**
  * Created by aristidesguimeraorozco on 5/5/18.
@@ -27,8 +27,10 @@ class DogsAdapter (val images: List<String>) : RecyclerView.Adapter<DogsAdapter.
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
+        private val binding = ItemDogBinding.bind(view)
+
         fun bind(image: String) {
-            itemView.ivDog.fromUrl(image)
+            binding.ivDog.fromUrl(image)
         }
     }
 }
