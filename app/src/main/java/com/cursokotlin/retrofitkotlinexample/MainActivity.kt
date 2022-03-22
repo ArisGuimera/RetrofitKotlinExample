@@ -9,6 +9,7 @@ import com.cursokotlin.retrofitkotlinexample.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -38,10 +39,16 @@ class MainActivity : AppCompatActivity(), androidx.appcompat.widget.SearchView.O
 
     private fun getRetrofit(): Retrofit {
         return Retrofit.Builder()
-                .baseUrl("https://dog.ceo/api/breed/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
+            .baseUrl("https://dog.ceo/api/breed/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(getClient())
+            .build()
     }
+
+    private fun getClient(): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(HeaderInterceptor())
+            .build()
 
 
     override fun onQueryTextSubmit(query: String): Boolean {
@@ -51,7 +58,9 @@ class MainActivity : AppCompatActivity(), androidx.appcompat.widget.SearchView.O
 
     private fun searchByName(query: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val call = getRetrofit().create(APIService::class.java).getCharacterByName("$query/images").execute()
+            val call =
+                getRetrofit().create(APIService::class.java).getCharacterByName("$query/images")
+                    .execute()
             val puppies = call.body() as DogsResponse?
             runOnUiThread {
                 if (puppies?.status == "success") {
